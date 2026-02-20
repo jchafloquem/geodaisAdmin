@@ -90,7 +90,17 @@ export class Dashboard implements AfterViewInit {
 
     if (registro.geojson) {
       this.geoJsonLayer = L.geoJSON(registro.geojson, {
-        style: { color: '#3880ff', weight: 4, fillOpacity: 0.4 }
+        style: { color: '#3880ff', weight: 4, fillOpacity: 0.4 },
+        // Configuración para convertir puntos en marcadores CSS
+        pointToLayer: (feature: any, latlng: any) => {
+          return L.marker(latlng, {
+            icon: L.divIcon({
+              className: 'custom-marker-point', // Clase que definiremos en SCSS
+              iconSize: [16, 16],   // Tamaño del círculo
+              iconAnchor: [8, 8]    // Anclaje en el centro (mitad del tamaño)
+            })
+          });
+        }
       }).addTo(this.map!);
 
       try {
