@@ -1,7 +1,9 @@
-staticSites:
-  - name: geodais-web
+services:
+  - type: web
+    name: geodais-web
+    env: static
     buildCommand: npm install && npm run build
-    publishPath: dist/geodais-web/browser
+    staticPublishPath: dist/geodais-web/browser
     routes:
       - type: rewrite
         source: /*
