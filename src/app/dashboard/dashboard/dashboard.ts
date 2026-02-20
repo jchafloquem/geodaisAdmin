@@ -45,7 +45,7 @@ export class Dashboard implements AfterViewInit {
 
   private async initMap() {
     // Importación dinámica: Carga Leaflet solo cuando se necesita en el navegador
-    const L = await import('leaflet');
+    const L = await import('leaflet').then(module => module.default || module) as any;
 
     // Inicializa el mapa centrado en Perú
     this.map = L.map(this.mapContainer.nativeElement).setView([-9.00, -70.0152], 6);
@@ -66,7 +66,7 @@ export class Dashboard implements AfterViewInit {
   }
 
   private async showGeometry(registro: any) {
-    const L = await import('leaflet');
+    const L = await import('leaflet').then(module => module.default || module) as any;
 
     if (this.geoJsonLayer) {
       this.map?.removeLayer(this.geoJsonLayer);
