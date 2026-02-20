@@ -44,8 +44,14 @@ export class Dashboard implements AfterViewInit {
   }
 
   private async initMap() {
-    // Importación dinámica: Carga Leaflet solo cuando se necesita en el navegador
-    const L = await import('leaflet').then(module => module.default || module) as any;
+    // Importación dinámica robusta: Verifica explícitamente dónde está la función 'map'
+    const module = await import('leaflet') as any;
+    const L = module.default?.map ? module.default : module;
+
+    if (!L || !L.map) {
+      console.error('Error crítico: Leaflet no se cargó correctamente.', module);
+      return;
+    }
 
     // Inicializa el mapa centrado en Perú
     this.map = L.map(this.mapContainer.nativeElement).setView([-9.00, -70.0152], 6);
@@ -66,7 +72,8 @@ export class Dashboard implements AfterViewInit {
   }
 
   private async showGeometry(registro: any) {
-    const L = await import('leaflet').then(module => module.default || module) as any;
+    const module = await import('leaflet') as any;
+    const L = module.default?.map ? module.default : module;
 
     if (this.geoJsonLayer) {
       this.map?.removeLayer(this.geoJsonLayer);
@@ -78,7 +85,7 @@ export class Dashboard implements AfterViewInit {
       }).addTo(this.map!);
 
       try {
-        const bounds = this.geoJsonLayer.getBounds();
+        const bounds = this.geoJsonLayer!.getBounds();
         this.map?.fitBounds(bounds);
 
         const center = bounds.getCenter();
