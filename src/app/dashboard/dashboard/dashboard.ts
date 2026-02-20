@@ -53,6 +53,15 @@ export class Dashboard implements AfterViewInit {
       return;
     }
 
+    // FIX: Corregir la ruta de los iconos de Leaflet para producción
+    // Esto es necesario porque al compilar, Leaflet pierde la referencia a sus imágenes locales
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    });
+
     // Inicializa el mapa centrado en Perú
     this.map = L.map(this.mapContainer.nativeElement).setView([-9.00, -70.0152], 6);
 
