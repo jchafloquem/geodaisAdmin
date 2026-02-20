@@ -1,0 +1,92 @@
+<div class="dashboard-layout">
+  <!-- BARRA LATERAL: LISTA -->
+  <aside class="sidebar">
+    <div class="header">
+      <h2>GeoDAIS Admin</h2>
+      <span class="badge">{{ dataService.registros().length }} Registros</span>
+    </div>
+
+    <div class="list-container">
+      @if (dataService.loading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando datos...</p>
+        </div>
+      }
+
+      @for (registro of dataService.registros(); track registro.internal_key) {
+        <div class="card"
+             [class.active]="dataService.selectedRegistro() === registro"
+             (click)="dataService.selectRegistro(registro)">
+          <div class="card-header">
+            <strong>{{ registro.nombre_completo || 'Sin Nombre' }}</strong>
+          </div>
+          <div class="card-body">
+            <p>DNI: {{ registro.dni_productor }}</p>
+            <span class="tag">{{ registro.tipo_cultivo }}</span>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty">No hay registros disponibles.</div>
+      }
+    </div>
+  </aside>
+
+  <!-- AREA PRINCIPAL: MAPA Y DETALLES -->
+  <main class="content">
+    <div #mapContainer class="map-view"></div>
+
+    <!-- PANEL FLOTANTE DE DETALLES -->
+    @if (dataService.selectedRegistro(); as selected) {
+      <div class="detail-panel">
+        <h3>Detalle del Productor</h3>
+        <div class="grid-info">
+          <div>
+            <label>Área:</label>
+            <span>{{ selected.area_ha }} ha</span>
+          </div>
+          <div>
+            <label>Fecha:</label>
+            <span style="text-transform: capitalize;">{{ selected.fecha_creacion | date:'EEEE dd/MM/yyyy' }}</span>
+          </div>
+          <div>
+            <label>Coordenadas:</label>
+            <span>{{ currentCoordinates || 'Sin ubicación' }}</span>
+          </div>
+        </div>
+
+        <h4>Evidencias Fotográficas</h4>
+        <div class="gallery">
+          @for (foto of selected.fotos; track foto.id; let i = $index) {
+            <div class="photo-wrapper" (click)="openPhoto(i)">
+              <img [src]="foto.url" [alt]="foto.tipo_foto" loading="lazy">
+              <span class="photo-label">{{ foto.tipo_foto }}</span>
+            </div>
+          } @empty {
+            <p>No hay fotos adjuntas.</p>
+          }
+        </div>
+      </div>
+    }
+  </main>
+
+  <!-- MODAL DE VISUALIZACIÓN DE FOTOS -->
+  @if (selectedPhotoIndex !== null) {
+    <div class="photo-modal" (click)="closePhoto()">
+      <!-- Botón Anterior -->
+      <button class="nav-btn prev" (click)="$event.stopPropagation(); prevPhoto()">&#10094;</button>
+
+      <img [src]="currentPhotoUrl" alt="Foto detalle" (click)="$event.stopPropagation()">
+
+      <!-- Botón Siguiente -->
+      <button class="nav-btn next" (click)="$event.stopPropagation(); nextPhoto()">&#10095;</button>
+
+      <button class="close-modal-btn" (click)="closePhoto()">×</button>
+
+      <!-- Contador -->
+      <div class="photo-counter" (click)="$event.stopPropagation()">
+        {{ selectedPhotoIndex + 1 }} / {{ dataService.selectedRegistro()?.fotos?.length }}
+      </div>
+    </div>
+  }
+</div>
