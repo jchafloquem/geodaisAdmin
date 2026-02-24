@@ -4,5 +4,5 @@ Version de Angular [Angular CLI](https://github.com/angular/angular-cli) version
 ## Developer
 Jorge Chafloque Millones
 
-## Fecha 
-Elaborado el 20 de febrero 2026
+## Fecha_creacion
+20 de febrero 2026
